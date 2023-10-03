@@ -47,7 +47,6 @@ class ChangeItemActivity : AppCompatActivity() {
     private fun launchAddItem() {
         viewmodel.apply {
             saveButton.setOnClickListener {
-                getTaskItem(taskItemID)
                 getAddItemTask(titleInput.text.toString(),desriptionInput.text.toString())
             }
 

@@ -9,12 +9,13 @@ import java.lang.RuntimeException
 
 object TaskRepositoryImpl : TaskRepository {
 
-    val task = sortedSetOf<Task>({o1,o2 -> o1.id.compareTo(o2.id)})
+    val task = sortedSetOf<Task>({ o1, o2 -> o1.id.compareTo(o2.id) })
     val taskListMutable = MutableLiveData<List<Task>>()
     private var autoIncrementId = 0
+
     init {
-        for (i in 0 until 10){
-            val item = Task("$i task", "description first task",true,i)
+        for (i in 1 until 10) {
+            val item = Task("$i task", "description first task", true, i)
             addTaskItem(item)
         }
     }
@@ -24,17 +25,19 @@ object TaskRepositoryImpl : TaskRepository {
         return taskListMutable
     }
 
-    override fun getTaskItem(id:Int):Task {
-       return task.find {
-           it.id == id
-       }?:throw RuntimeException("Element with id $id not found")
+    override fun getTaskItem(id: Int): Task {
+        return task.find {
+            it.id == id
+        } ?: throw RuntimeException("Element with id $id not found")
     }
 
     override fun addTaskItem(taskItem: Task) {
-        if (taskItem.id == Task.UNDEFINED_ID){
+
+        if (taskItem.id == Task.UNDEFINED_ID) {
             taskItem.id = autoIncrementId++
         }
-        Log.d("TaskDebbuger", "${taskItem.id}")
+
+        Log.d("TaskDebbuger", "${taskItem}")
         task.add(taskItem)
         updateList()
     }
@@ -50,7 +53,8 @@ object TaskRepositoryImpl : TaskRepository {
         addTaskItem(taskItem)
         updateList()
     }
-    fun updateList(){
+
+    fun updateList() {
         taskListMutable.value = task.toList()
     }
 }

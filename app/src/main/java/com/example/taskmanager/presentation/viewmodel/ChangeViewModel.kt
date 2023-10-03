@@ -56,7 +56,6 @@ class ChangeViewModel : ViewModel() {
         val valid = validateInput(titleParse,descriptionParse)
         if (valid) {
            val taskItem = Task(titleParse,descriptionParse,true)
-            Log.d("TaskDebbuger","task add ${taskItem}")
             taskAddItemUseCase.addTaskItem(taskItem)
             finishScreen()
         }
