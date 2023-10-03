@@ -13,12 +13,6 @@ object TaskRepositoryImpl : TaskRepository {
     val taskListMutable = MutableLiveData<List<Task>>()
     private var autoIncrementId = 0
 
-    init {
-        for (i in 1 until 10) {
-            val item = Task("$i task", "description first task", true, i)
-            addTaskItem(item)
-        }
-    }
 
     override fun getTaskList(): LiveData<List<Task>> {
 

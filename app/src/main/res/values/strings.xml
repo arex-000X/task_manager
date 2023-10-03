@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Task manager</string>
+    <string name="error_input_title">Invalid title</string>
+    <string name="error_input_description">Invalid description</string>
 </resources>

@@ -3,9 +3,12 @@ package com.example.taskmanager.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import com.example.taskmanager.R
 import com.example.taskmanager.domain.Task
@@ -26,7 +29,10 @@ class ChangeItemActivity : AppCompatActivity() {
         parseIntent()
         initViews()
         launchRightMode()
+        observeView()
     }
+
+
 
     private fun launchRightMode() {
         when (screeMode) {
@@ -47,12 +53,35 @@ class ChangeItemActivity : AppCompatActivity() {
     private fun launchAddItem() {
         viewmodel.apply {
             saveButton.setOnClickListener {
-                getAddItemTask(titleInput.text.toString(),desriptionInput.text.toString())
+                getAddItemTask(titleInput.text.toString(), desriptionInput.text.toString())
             }
 
         }
     }
 
+    private fun observeView() {
+
+        viewmodel.getErrorTitleEditTex.observe(this) {
+            val message = if (it) {
+                getString(R.string.error_input_title)
+            } else {
+                null
+            }
+            titleInput.error = message
+        }
+        viewmodel.getErrorDescriptionEditTex.observe(this) {
+            val message = if (it) {
+                getString(R.string.error_input_title)
+            } else {
+                null
+            }
+            desriptionInput.error = message
+        }
+
+        viewmodel.getCloseScreen.observe(this) {
+            finish()
+        }
+    }
 
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
