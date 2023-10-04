@@ -19,69 +19,27 @@ import java.lang.RuntimeException
 class ChangeItemActivity : AppCompatActivity() {
     private var screeMode = MODE_UNKNOW
     private var taskItemID = Task.UNDEFINED_ID
-    lateinit var viewmodel: ChangeViewModel
-    lateinit var titleInput: TextInputEditText
-    lateinit var desriptionInput: TextInputEditText
-    lateinit var saveButton: Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.change_item_activity)
         parseIntent()
-        initViews()
         launchRightMode()
-        observeView()
     }
 
 
 
     private fun launchRightMode() {
-        when (screeMode) {
-            MODE_EDIT -> launchEditItem()
-            MODE_ADD -> launchAddItem()
-        }
+       val fragment = when (screeMode){
+           MODE_EDIT -> ChangeItemFragment.newInstanceEditItem(taskItemID)
+               MODE_ADD -> ChangeItemFragment.newInstanceAddItem(taskItemID)
+           else -> throw  RuntimeException("Unknow screen ")
+       }
+        supportFragmentManager
+            .beginTransaction()
+            .add(R.id.fragment_container_view,fragment)
+            .commit()
     }
 
-    private fun launchEditItem() {
-        viewmodel.apply {
-            saveButton.setOnClickListener {
-                getTaskItem(taskItemID)
-                getEditItemTask(titleInput.text.toString(), desriptionInput.text.toString())
-            }
-        }
-    }
-
-    private fun launchAddItem() {
-        viewmodel.apply {
-            saveButton.setOnClickListener {
-                getAddItemTask(titleInput.text.toString(), desriptionInput.text.toString())
-            }
-
-        }
-    }
-
-    private fun observeView() {
-
-        viewmodel.getErrorTitleEditTex.observe(this) {
-            val message = if (it) {
-                getString(R.string.error_input_title)
-            } else {
-                null
-            }
-            titleInput.error = message
-        }
-        viewmodel.getErrorDescriptionEditTex.observe(this) {
-            val message = if (it) {
-                getString(R.string.error_input_title)
-            } else {
-                null
-            }
-            desriptionInput.error = message
-        }
-
-        viewmodel.getCloseScreen.observe(this) {
-            finish()
-        }
-    }
 
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
@@ -102,14 +60,6 @@ class ChangeItemActivity : AppCompatActivity() {
             Log.d("TaskDebbuger", "parseInt $taskItemID")
         }
     }
-
-    private fun initViews() {
-        viewmodel = ViewModelProvider(this@ChangeItemActivity).get(ChangeViewModel::class.java)
-        titleInput = findViewById(R.id.title_input)
-        desriptionInput = findViewById(R.id.description_input)
-        saveButton = findViewById(R.id.save_button)
-    }
-
 
     companion object {
         private const val EXTRA_SCREEN_MODE = "EXTRA_MODE"
