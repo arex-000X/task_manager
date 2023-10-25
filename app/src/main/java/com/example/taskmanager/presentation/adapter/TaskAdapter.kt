@@ -3,17 +3,20 @@ package com.example.taskmanager.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import com.example.taskmanager.R
+import com.example.taskmanager.databinding.RecylerItemDisableBinding
+import com.example.taskmanager.databinding.RecylerItemEnableBinding
 import com.example.taskmanager.domain.Task
 import java.lang.RuntimeException
 
 
-
 class TaskAdapter : ListAdapter<Task, TaskViewHolder>(DiffItemAdapter()) {
 
-        var setLongClickListene:((Task) -> Unit)? = null
-        var setOnClickListene:((Task) -> Unit)? = null
+    var setLongClickListene: ((Task) -> Unit)? = null
+    var setOnClickListene: ((Task) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val layout = when (viewType) {
@@ -21,23 +24,39 @@ class TaskAdapter : ListAdapter<Task, TaskViewHolder>(DiffItemAdapter()) {
             VIEW_TYPE_DISABLE -> R.layout.recyler_item_disable
             else -> throw RuntimeException("Unknow view type $viewType")
         }
-        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
-        return TaskViewHolder(view)
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context),
+            layout,
+            parent,
+            false
+        )
+        return TaskViewHolder(binding)
     }
 
     override fun getItemViewType(position: Int): Int {
         val item = getItem(position)
-        return if(item.enable){
+        return if (item.enable) {
             0
-        }else{
+        } else {
             1
         }
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task: Task = getItem(position)
-        holder.title.text = task.title
-        holder.description.text = task.description
+        val binding = holder.binding
+
+        when (binding) {
+            is RecylerItemEnableBinding -> {
+                binding.title.text = task.title
+                binding.description.text = task.description
+            }
+
+            is RecylerItemDisableBinding -> {
+                binding.title.text = task.title
+                binding.description.text = task.description
+            }
+        }
         holder.itemView.setOnLongClickListener {
             setLongClickListene?.invoke(task)
             true
@@ -47,7 +66,8 @@ class TaskAdapter : ListAdapter<Task, TaskViewHolder>(DiffItemAdapter()) {
         }
 
     }
-    companion object{
+
+    companion object {
         const val VIEW_TYPE_ENABLE = 0
         const val VIEW_TYPE_DISABLE = 1
 

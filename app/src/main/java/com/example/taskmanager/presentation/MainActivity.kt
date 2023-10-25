@@ -3,7 +3,12 @@ package com.example.taskmanager.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainer
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -12,15 +17,18 @@ import com.example.taskmanager.presentation.adapter.TaskAdapter
 import com.example.taskmanager.presentation.viewmodel.MainViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),ChangeItemFragment.EdingFragment {
 
     private lateinit var viewmodel: MainViewModel
     private lateinit var recylerview: RecyclerView
     private lateinit var adapter: TaskAdapter
     private lateinit var floatingActionButton: FloatingActionButton
+    private var taskfragmentContainer: FragmentContainerView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+      //  Log.d("TaskDebbuger", "MainActivity onCreate()")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        taskfragmentContainer = findViewById(R.id.fragment_container_view_act)
         initViews()
         recylerView()
         viewModel()
@@ -28,6 +36,25 @@ class MainActivity : AppCompatActivity() {
         setupSwipeListener()
         setupOnClickListener()
         setupFloatingActionButton()
+    }
+
+    override fun onStart() {
+        super.onStart()
+       // Log.d("TaskDebbuger", "MainActivity onStart()")
+    }
+
+    override fun onResume() {
+        super.onResume()
+      //  Log.d("TaskDebbuger", "MainActivity onResume()")
+    }
+    override fun onStop() {
+        super.onStop()
+     //   Log.d("TaskDebbuger", "MainActivity onStop()")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+     //   Log.d("TaskDebbuger", "MainActivity onDestroy()")
     }
 
     private fun viewModel() {
@@ -76,19 +103,38 @@ class MainActivity : AppCompatActivity() {
     private fun setupOnClickListener() {
         adapter.setOnClickListene = {
             if (it.enable == true) {
-                val intent = ChangeItemActivity.newIntentEditItem(this,it.id)
-                startActivity(intent)
+                if (isOnPaneMode()) {
+                    val intent = ChangeItemActivity.newIntentEditItem(this, it.id)
+                    startActivity(intent)
+                } else {
+                    launchFragment(ChangeItemFragment.newInstanceEditItem(it.id))
+                }
+
             }
         }
     }
 
     private fun setupFloatingActionButton() {
         floatingActionButton.setOnClickListener {
-            val intent = ChangeItemActivity.newIntentAddItem(this)
-            startActivity(intent)
+            if (isOnPaneMode()) {
+                val intent = ChangeItemActivity.newIntentAddItem(this)
+                startActivity(intent)
+            } else {
+                launchFragment(ChangeItemFragment.newInstanceAddItem())
+            }
         }
     }
 
+    private fun launchFragment(fm: Fragment) {
+        supportFragmentManager.popBackStack()
+        supportFragmentManager
+            .beginTransaction().addToBackStack(null)
+            .replace(R.id.fragment_container_view_act, fm)
+            .commit()
+    }
+    private fun isOnPaneMode(): Boolean {
+        return taskfragmentContainer == null
+    }
 
     fun initViews() {
         viewmodel = ViewModelProvider(this)[MainViewModel::class.java]
@@ -97,9 +143,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    companion object {
-        fun newIntent(context: Context): Intent {
-            return Intent(context, MainActivity::class.java)
-        }
+    override fun closeFragment() {
+        supportFragmentManager.popBackStack()
     }
 }

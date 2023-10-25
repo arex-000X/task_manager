@@ -16,10 +16,11 @@ import com.example.taskmanager.presentation.viewmodel.ChangeViewModel
 import com.google.android.material.textfield.TextInputEditText
 import java.lang.RuntimeException
 
-class ChangeItemActivity : AppCompatActivity() {
+class ChangeItemActivity : AppCompatActivity(), ChangeItemFragment.EdingFragment {
     private var screeMode = MODE_UNKNOW
     private var taskItemID = Task.UNDEFINED_ID
     override fun onCreate(savedInstanceState: Bundle?) {
+      //  Log.d("TaskDebbuger", "ChangeItemActivity onCreate()")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.change_item_activity)
         parseIntent()
@@ -27,16 +28,36 @@ class ChangeItemActivity : AppCompatActivity() {
     }
 
 
+    override fun onStart() {
+        super.onStart()
+      //  Log.d("TaskDebbuger", "ChangeItemActivity onStart()")
+    }
+
+    override fun onResume() {
+        super.onResume()
+       // Log.d("TaskDebbuger", "ChangeItemActivity onResume()")
+    }
+
+    override fun onStop() {
+        super.onStop()
+       // Log.d("TaskDebbuger", "ChangeItemActivity  onStop()")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+       // Log.d("TaskDebbuger", "ChangeItemActivity onDestroy()")
+    }
+
 
     private fun launchRightMode() {
-       val fragment = when (screeMode){
-           MODE_EDIT -> ChangeItemFragment.newInstanceEditItem(taskItemID)
-               MODE_ADD -> ChangeItemFragment.newInstanceAddItem(taskItemID)
-           else -> throw  RuntimeException("Unknow screen ")
-       }
+        val fragment = when (screeMode) {
+            MODE_EDIT -> ChangeItemFragment.newInstanceEditItem(taskItemID)
+            MODE_ADD -> ChangeItemFragment.newInstanceAddItem()
+            else -> throw RuntimeException("Unknow screen ")
+        }
         supportFragmentManager
             .beginTransaction()
-            .add(R.id.fragment_container_view,fragment)
+            .add(R.id.fragment_container_view, fragment)
             .commit()
     }
 
@@ -79,5 +100,9 @@ class ChangeItemActivity : AppCompatActivity() {
             intent.putExtra(EXTRA_SHOP_ITEM_ID, id)
             return intent
         }
+    }
+
+    override fun closeFragment() {
+        finish()
     }
 }
