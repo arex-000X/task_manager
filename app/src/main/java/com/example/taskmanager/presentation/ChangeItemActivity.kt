@@ -52,7 +52,7 @@ class ChangeItemActivity : AppCompatActivity(), ChangeItemFragment.EdingFragment
     private fun launchRightMode() {
         val fragment = when (screeMode) {
             MODE_EDIT -> ChangeItemFragment.newInstanceEditItem(taskItemID)
-            MODE_ADD -> ChangeItemFragment.newInstanceAddItem()
+            MODE_ADD -> ChangeItemFragment.newInstanceAddItem(taskItemID)
             else -> throw RuntimeException("Unknow screen ")
         }
         supportFragmentManager

@@ -169,7 +169,7 @@ class ChangeItemFragment : Fragment() {
         private const val MODE_EDIT = "EDIT_MODE"
         private const val EXTRA_SHOP_ITEM_ID = "extra_shop_task_id"
         private const val MODE_UNKNOW = ""
-        fun newInstanceAddItem(): ChangeItemFragment {
+        fun newInstanceAddItem(taskItemID: Int): ChangeItemFragment {
             return ChangeItemFragment().apply {
                 arguments = Bundle().apply {
                     putString(EXTRA_SCREEN_MODE, MODE_ADD)

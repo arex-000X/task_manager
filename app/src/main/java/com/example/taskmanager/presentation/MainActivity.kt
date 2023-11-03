@@ -38,24 +38,6 @@ class MainActivity : AppCompatActivity(),ChangeItemFragment.EdingFragment {
         setupFloatingActionButton()
     }
 
-    override fun onStart() {
-        super.onStart()
-       // Log.d("TaskDebbuger", "MainActivity onStart()")
-    }
-
-    override fun onResume() {
-        super.onResume()
-      //  Log.d("TaskDebbuger", "MainActivity onResume()")
-    }
-    override fun onStop() {
-        super.onStop()
-     //   Log.d("TaskDebbuger", "MainActivity onStop()")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-     //   Log.d("TaskDebbuger", "MainActivity onDestroy()")
-    }
 
     private fun viewModel() {
         viewmodel.apply {
@@ -120,7 +102,7 @@ class MainActivity : AppCompatActivity(),ChangeItemFragment.EdingFragment {
                 val intent = ChangeItemActivity.newIntentAddItem(this)
                 startActivity(intent)
             } else {
-                launchFragment(ChangeItemFragment.newInstanceAddItem())
+                launchFragment(ChangeItemFragment.newInstanceAddItem(taskId))
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.example.taskmanager.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,6 @@ import com.example.taskmanager.domain.Task
 import com.example.taskmanager.domain.usecase.TaskAddItemUseCase
 import com.example.taskmanager.domain.usecase.TaskEditItemUseCase
 import com.example.taskmanager.domain.usecase.TaskItemUseCase
-import kotlin.random.Random
 
 class ChangeViewModel : ViewModel() {
 
