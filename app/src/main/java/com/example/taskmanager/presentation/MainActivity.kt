@@ -1,34 +1,29 @@
 package com.example.taskmanager.presentation
 
-import android.content.Context
-import android.content.Intent
+
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainer
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.taskmanager.R
+import com.example.taskmanager.databinding.ActivityMainBinding
 import com.example.taskmanager.presentation.adapter.TaskAdapter
 import com.example.taskmanager.presentation.viewmodel.MainViewModel
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity(),ChangeItemFragment.EdingFragment {
 
     private lateinit var viewmodel: MainViewModel
-    private lateinit var recylerview: RecyclerView
     private lateinit var adapter: TaskAdapter
-    private lateinit var floatingActionButton: FloatingActionButton
-    private var taskfragmentContainer: FragmentContainerView? = null
+
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater)}
+
     override fun onCreate(savedInstanceState: Bundle?) {
-      //  Log.d("TaskDebbuger", "MainActivity onCreate()")
+
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        taskfragmentContainer = findViewById(R.id.fragment_container_view_act)
+        setContentView(binding.root)
         initViews()
         recylerView()
         viewModel()
@@ -48,8 +43,7 @@ class MainActivity : AppCompatActivity(),ChangeItemFragment.EdingFragment {
     }
 
     private fun recylerView() {
-        recylerview = findViewById(R.id.recylerview)
-        recylerview.adapter = adapter
+        binding.recylerview.adapter = adapter
     }
 
 
@@ -72,7 +66,7 @@ class MainActivity : AppCompatActivity(),ChangeItemFragment.EdingFragment {
 
         }
         val item = ItemTouchHelper(callback)
-        item.attachToRecyclerView(recylerview)
+        item.attachToRecyclerView(binding.recylerview)
 
     }
 
@@ -84,9 +78,9 @@ class MainActivity : AppCompatActivity(),ChangeItemFragment.EdingFragment {
 
     private fun setupOnClickListener() {
         adapter.setOnClickListene = {
-            if (it.enable == true) {
+            if (it.enable) {
                 if (isOnPaneMode()) {
-                    val intent = ChangeItemActivity.newIntentEditItem(this, it.id)
+                    val intent = ChangeItemActivity.newIntentEditItem(this,it.id)
                     startActivity(intent)
                 } else {
                     launchFragment(ChangeItemFragment.newInstanceEditItem(it.id))
@@ -97,12 +91,13 @@ class MainActivity : AppCompatActivity(),ChangeItemFragment.EdingFragment {
     }
 
     private fun setupFloatingActionButton() {
-        floatingActionButton.setOnClickListener {
+
+        binding.floatingActionButton.setOnClickListener {
             if (isOnPaneMode()) {
                 val intent = ChangeItemActivity.newIntentAddItem(this)
                 startActivity(intent)
             } else {
-                launchFragment(ChangeItemFragment.newInstanceAddItem(taskId))
+                launchFragment(ChangeItemFragment.newInstanceAddItem())
             }
         }
     }
@@ -115,14 +110,12 @@ class MainActivity : AppCompatActivity(),ChangeItemFragment.EdingFragment {
             .commit()
     }
     private fun isOnPaneMode(): Boolean {
-        return taskfragmentContainer == null
+        return binding.fragmentContainerViewAct == null
     }
 
     fun initViews() {
         viewmodel = ViewModelProvider(this)[MainViewModel::class.java]
         adapter = TaskAdapter()
-        floatingActionButton = findViewById(R.id.floatingActionButton)
-
     }
 
     override fun closeFragment() {

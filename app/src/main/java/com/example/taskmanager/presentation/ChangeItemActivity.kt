@@ -3,56 +3,29 @@ package com.example.taskmanager.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModelProvider
 import com.example.taskmanager.R
+import com.example.taskmanager.databinding.ChangeItemActivityBinding
 import com.example.taskmanager.domain.Task
-import com.example.taskmanager.presentation.viewmodel.ChangeViewModel
-import com.google.android.material.textfield.TextInputEditText
 import java.lang.RuntimeException
 
 class ChangeItemActivity : AppCompatActivity(), ChangeItemFragment.EdingFragment {
     private var screeMode = MODE_UNKNOW
     private var taskItemID = Task.UNDEFINED_ID
+    private val binding by lazy { ChangeItemActivityBinding.inflate(layoutInflater)}
     override fun onCreate(savedInstanceState: Bundle?) {
       //  Log.d("TaskDebbuger", "ChangeItemActivity onCreate()")
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.change_item_activity)
+        setContentView(binding.root)
         parseIntent()
         launchRightMode()
     }
 
-
-    override fun onStart() {
-        super.onStart()
-      //  Log.d("TaskDebbuger", "ChangeItemActivity onStart()")
-    }
-
-    override fun onResume() {
-        super.onResume()
-       // Log.d("TaskDebbuger", "ChangeItemActivity onResume()")
-    }
-
-    override fun onStop() {
-        super.onStop()
-       // Log.d("TaskDebbuger", "ChangeItemActivity  onStop()")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-       // Log.d("TaskDebbuger", "ChangeItemActivity onDestroy()")
-    }
-
-
     private fun launchRightMode() {
         val fragment = when (screeMode) {
             MODE_EDIT -> ChangeItemFragment.newInstanceEditItem(taskItemID)
-            MODE_ADD -> ChangeItemFragment.newInstanceAddItem(taskItemID)
+            MODE_ADD -> ChangeItemFragment.newInstanceAddItem()
             else -> throw RuntimeException("Unknow screen ")
         }
         supportFragmentManager
