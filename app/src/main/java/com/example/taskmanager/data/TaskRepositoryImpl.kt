@@ -1,54 +1,44 @@
 package com.example.taskmanager.data
 
+import android.app.Application
+import android.service.autofill.Transformation
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import com.example.taskmanager.domain.Task
 import com.example.taskmanager.domain.repository.TaskRepository
 import java.lang.RuntimeException
 
-object TaskRepositoryImpl : TaskRepository {
+class TaskRepositoryImpl(
+    application: Application
+) : TaskRepository {
 
-    val task = sortedSetOf<Task>({ o1, o2 -> o1.id.compareTo(o2.id) })
-    val taskListMutable = MutableLiveData<List<Task>>()
-    private var autoIncrementId = 0
-
-
-    override fun getTaskList(): LiveData<List<Task>> {
-
-        return taskListMutable
+    private val taskDB = TaskDatabase.getInstance(application).taskDao()
+    private val mapper = TaskMapper()
+    override fun getTaskList(): LiveData<List<Task>> = taskDB.getTaskList().map {
+        mapper.mapListDBMidule(it)
     }
 
-    override fun getTaskItem(id: Int): Task {
-        return task.find {
-            it.id == id
-        } ?: throw RuntimeException("Element with id $id not found")
+
+    override suspend fun getTaskItem(id: Int): Task {
+        val modelDb = taskDB.getTaskItem(id)
+        return mapper.taskDBModuleToTask(modelDb)
     }
 
-    override fun addTaskItem(taskItem: Task) {
-
-        if (taskItem.id == Task.UNDEFINED_ID) {
-            taskItem.id = autoIncrementId++
-        }
-
-        Log.d("TaskDebbuger", "${taskItem}")
-        task.add(taskItem)
-        updateList()
+    override suspend fun addTaskItem(taskItem: Task) {
+        taskDB.addTaskItem(mapper.taskToTaskDBModule(taskItem))
     }
 
-    override fun deleteTaskItem(taskItem: Task) {
-        task.remove(taskItem)
-        updateList()
+    override suspend fun deleteTaskItem(taskItem: Task) {
+        taskDB.deleteTaskItem(taskItem.id)
+
     }
 
-    override fun editTaskItem(taskItem: Task) {
-        val oldTaskItem = getTaskItem(taskItem.id)
-        task.remove(oldTaskItem)
-        addTaskItem(taskItem)
-        updateList()
+    override suspend fun editTaskItem(taskItem: Task) {
+        taskDB.addTaskItem(mapper.taskToTaskDBModule(taskItem))
     }
 
-    fun updateList() {
-        taskListMutable.value = task.toList()
-    }
+
 }

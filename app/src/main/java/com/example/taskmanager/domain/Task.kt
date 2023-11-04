@@ -1,6 +1,5 @@
 package com.example.taskmanager.domain
 
-
 data class Task(
     val title: String,
     val description: String,
@@ -9,6 +8,6 @@ data class Task(
 ) {
     companion object {
 
-        const val UNDEFINED_ID = -1
+        const val UNDEFINED_ID = 0
     }
 }

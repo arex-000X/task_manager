@@ -5,9 +5,9 @@ import com.example.taskmanager.domain.Task
 
 interface TaskRepository {
 
-   fun getTaskList():LiveData<List<Task>>
-   fun getTaskItem(id:Int): Task
-   fun addTaskItem(taskItem: Task)
-   fun deleteTaskItem(taskItem: Task)
-   fun editTaskItem(taskItem: Task)
+    fun getTaskList(): LiveData<List<Task>>
+    suspend fun getTaskItem(id: Int): Task
+    suspend fun addTaskItem(taskItem: Task)
+    suspend fun deleteTaskItem(taskItem: Task)
+    suspend fun editTaskItem(taskItem: Task)
 }

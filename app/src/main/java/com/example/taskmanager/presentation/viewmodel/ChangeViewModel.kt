@@ -1,17 +1,21 @@
 package com.example.taskmanager.presentation.viewmodel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.data.TaskRepositoryImpl
 import com.example.taskmanager.domain.Task
 import com.example.taskmanager.domain.usecase.TaskAddItemUseCase
 import com.example.taskmanager.domain.usecase.TaskEditItemUseCase
 import com.example.taskmanager.domain.usecase.TaskItemUseCase
+import kotlinx.coroutines.launch
 
-class ChangeViewModel : ViewModel() {
+class ChangeViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = TaskRepositoryImpl
+    private val repository = TaskRepositoryImpl(application)
     private val tasItemUseCase = TaskItemUseCase(repository)
     private val taskAddItemUseCase = TaskAddItemUseCase(repository)
     private val taskEditItemUseCase = TaskEditItemUseCase(repository)
@@ -53,9 +57,12 @@ class ChangeViewModel : ViewModel() {
         val descriptionParse = parseTextInput(description)
         val valid = validateInput(titleParse,descriptionParse)
         if (valid) {
-           val taskItem = Task(titleParse,descriptionParse,true)
-            taskAddItemUseCase.addTaskItem(taskItem)
-            finishScreen()
+            viewModelScope.launch {
+                val taskItem = Task(titleParse,descriptionParse,true)
+                taskAddItemUseCase.addTaskItem(taskItem)
+                finishScreen()
+            }
+
         }
     }
 
@@ -69,29 +76,26 @@ class ChangeViewModel : ViewModel() {
         val valid = validateInput(title, description)
         if (valid) {
             modelTaskItem.value?.let {
-                val task = it.copy(title = title, description = description, enable = true)
-                taskEditItemUseCase.editItemUseCase(task)
-                finishScreen()
+                viewModelScope.launch {
+                    val task = it.copy(title = title, description = description, enable = true)
+                    taskEditItemUseCase.editItemUseCase(task)
+                    finishScreen()
+                }
             }
 
         }
     }
 
     fun getTaskItem(id: Int) {
-        val item = tasItemUseCase.getItemTask(id)
-        modelTaskItem.value = item
-        finishScreen()
-    }
+        viewModelScope.launch {
 
-    fun resetErrorTitle() {
-        errorTitleEditText.value = false
-    }
 
-    fun resetErrorDescription() {
-        errorDescriptionEditText.value = false
+            val item = tasItemUseCase.getItemTask(id)
+            modelTaskItem.value = item
+            finishScreen()
+        }
     }
-
     fun finishScreen() {
-        closeScreen.value = Unit
+        closeScreen.postValue(Unit)
     }
 }

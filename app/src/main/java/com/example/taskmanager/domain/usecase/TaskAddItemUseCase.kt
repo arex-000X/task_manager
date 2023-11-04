@@ -4,5 +4,5 @@ import com.example.taskmanager.domain.Task
 import com.example.taskmanager.domain.repository.TaskRepository
 
 class TaskAddItemUseCase(private val repository: TaskRepository) {
-    fun addTaskItem(taskItem: Task) = this.repository.addTaskItem(taskItem)
+  suspend fun addTaskItem(taskItem: Task) = this.repository.addTaskItem(taskItem)
 }

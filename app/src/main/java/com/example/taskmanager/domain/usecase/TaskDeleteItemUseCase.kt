@@ -4,5 +4,5 @@ import com.example.taskmanager.domain.Task
 import com.example.taskmanager.domain.repository.TaskRepository
 
 class TaskDeleteItemUseCase(val repository: TaskRepository) {
-        fun deleteTaskItem(taskItem: Task) = this.repository.deleteTaskItem(taskItem)
+        suspend fun deleteTaskItem(taskItem: Task) = this.repository.deleteTaskItem(taskItem)
 }
